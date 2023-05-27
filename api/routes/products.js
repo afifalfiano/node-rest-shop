@@ -4,11 +4,21 @@ const Product = require('../models/products');
 const mongoose = require('mongoose');
 
 router.get('/', (req, res, next) => {
-    Product.find().exec().then(doc => {
+    Product.find().select('name price _id').exec().then(doc => {
         if (doc.length > 0) {
-            res.status(200).json({message: 'Success', data: [...doc]})
+            res.status(200).json({message: 'Success', count: doc.length, data: doc.map(item => {
+                return {
+                    name: item.name,
+                    price: item.price,
+                    _id: item._id,
+                    request: {
+                        type: 'GET',
+                        url: 'http://localhost:3000/products/' + item._id
+                    }
+                }
+            })})
         } else {
-            res.status(404).json({message: 'No entries data', data: []})
+            res.status(404).json({message: 'No entries data', count: doc.length, data: []})
         }
     }).catch(err => {
         res.status(500).json({error: err});
@@ -33,10 +43,14 @@ router.post('/', (req, res, next) => {
 
 router.get('/:productId', (req, res, next) => {
     const id = req.params.productId;
-    Product.findById(id).exec().then(doc => {
+    Product.findById(id).select('name price _id').exec().then(doc => {
         console.log(doc)
         if (doc) {
-        res.status(200).json(doc)
+        res.status(200).json({product: doc, request: {
+            type: 'GET',
+            desciption: 'Get All products',
+            url: 'http://localhost:3000/products'
+        }})
         } else {
             res.status(404).json({message: `No valid entry ID ${id}`})
         }
