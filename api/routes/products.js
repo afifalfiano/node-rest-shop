@@ -9,8 +9,16 @@ router.get('/', (req, res, next) => {
 
 
 router.post('/', (req, res, next) => {
+    const product = {
+        name: req.body.name,
+        price: req.body.price,
+    }
+    const language = req.headers['accept-language'];
+    console.log(language)
     res.status(200).json({
-        messsage: 'Handling POST request to /products'
+        messsage: 'Handling POST request to /products',
+        createdProduct: product,
+        language
     })
 });
 
