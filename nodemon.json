@@ -1,5 +1,6 @@
 {
     "env": {
-        "MONGOOSE_ATLAS_PASSWORD": "node-shop" 
+        "MONGOOSE_ATLAS_PASSWORD": "node-shop" ,
+        "JWT_KEY": "secret"
     }
 }
