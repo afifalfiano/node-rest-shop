@@ -3,6 +3,7 @@ const router = express.Router();
 const Product = require('../models/products');
 const mongoose = require('mongoose');
 const multer = require('multer');
+const checkAuth = require('../middleware/check-auth');
 // const upload = multer({dest: './uploads'})
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -53,8 +54,7 @@ router.get('/', (req, res, next) => {
 });
 
 
-router.post('/', upload.single('productImage'),(req, res, next) => {
-    console.log(__dirname)
+router.post('/', checkAuth, upload.single('productImage'),(req, res, next) => {
     console.log(req.file)
     const product = new Product({
         _id: new mongoose.Types.ObjectId(),
@@ -63,10 +63,8 @@ router.post('/', upload.single('productImage'),(req, res, next) => {
         productImage: req.file.path
     })
     product.save().then(doc => {
-        console.log(doc);
         res.status(201).json({message: 'Success', product: product._id})
     }).catch(err => {
-        console.log(err);
         res.status(500).json({error: err})
     });
 });
@@ -74,7 +72,6 @@ router.post('/', upload.single('productImage'),(req, res, next) => {
 router.get('/:productId', (req, res, next) => {
     const id = req.params.productId;
     Product.findById(id).select('name price _id productImage').exec().then(doc => {
-        console.log(doc)
         if (doc) {
         res.status(200).json({product: doc, request: {
             type: 'GET',
@@ -85,13 +82,12 @@ router.get('/:productId', (req, res, next) => {
             res.status(404).json({message: `No valid entry ID ${id}`})
         }
     }).catch(err => {
-        console.log(err);
         res.status(500).json({error: err})
     });
 
 })
 
-router.patch('/:productId', (req, res, next) => {
+router.patch('/:productId', checkAuth, (req, res, next) => {
     const id = req.params.productId;
     const updateOps = {};
 
@@ -109,7 +105,7 @@ router.patch('/:productId', (req, res, next) => {
     })
 });
 
-router.delete('/:productId', (req, res, next) => {
+router.delete('/:productId', checkAuth, (req, res, next) => {
     const id = req.params.productId;
     Product.findByIdAndRemove({_id: id}).exec().then(doc => {
         if (doc) {

@@ -37,7 +37,6 @@ router.post('/signup', (req, res, next) => {
 });
 
 router.post('/signin', (req, res, next) => {
-    console.log(req)
     User.find({email: req.body.email}).exec().then(user => {
         if (user.length < 1) {
             return res.status(401).json({message: 'Auth failed'});

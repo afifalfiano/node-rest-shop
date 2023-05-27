@@ -4,6 +4,7 @@ const router = express.Router();
 const Order = require('../models/order')
 const Product = require('../models/products');
 const mongoose = require('mongoose');
+const checkAuth = require('../middleware/check-auth');
 
 router.get('/', (req, res, next) => {
     Order.find().populate('product', 'name').select('product quantity _id').then(result => {
@@ -24,7 +25,7 @@ router.get('/', (req, res, next) => {
 });
 
 
-router.post('/', (req, res, next) => {
+router.post('/', checkAuth, (req, res, next) => {
 
     Product.findById(req.body.productId).then(product => {
         if (!product) {
@@ -36,7 +37,6 @@ router.post('/', (req, res, next) => {
             product: req.body.productId
         })
         order.save().then(result => {
-            console.log(result)
             res.status(201).json({
                 message: 'Order created',
                 createdOrder: {
@@ -49,7 +49,6 @@ router.post('/', (req, res, next) => {
                 }
             });
         }).catch(err => {
-            console.log(err)
             res.status(500).json({error: err});
         })
     }).catch(err => {
@@ -73,7 +72,7 @@ router.get('/:orderId', (req, res, next) => {
     })
 })
 
-router.patch('/:orderId', (req, res, next) => {
+router.patch('/:orderId', checkAuth, (req, res, next) => {
     const id = req.params.orderId;
     res.status(200).json({
         messsage: 'Updated order!',
@@ -81,7 +80,7 @@ router.patch('/:orderId', (req, res, next) => {
     })
 });
 
-router.delete('/:orderId', (req, res, next) => {
+router.delete('/:orderId', checkAuth, (req, res, next) => {
     const id = req.params.orderId;
     Order.findByIdAndRemove({_id: id}).exec().then(doc => {
         if (doc) {
