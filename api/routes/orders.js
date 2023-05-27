@@ -6,7 +6,7 @@ const Product = require('../models/products');
 const mongoose = require('mongoose');
 
 router.get('/', (req, res, next) => {
-    Order.find().select('product quantity _id').then(result => {
+    Order.find().populate('product', 'name').select('product quantity _id').then(result => {
         res.status(200).json({message: 'success', count: result.length, data: result.map(item => {
             return {
                 product: item.product,
@@ -60,7 +60,7 @@ router.post('/', (req, res, next) => {
 
 router.get('/:orderId', (req, res, next) => {
     const id = req.params.orderId;
-    Order.findById(id).select('product quantity _id').exec().then(result => {
+    Order.findById(id).populate('product').select('product quantity _id').exec().then(result => {
         if (!result) {
             return res.status(404).json({message: 'Order not found'});
         }
