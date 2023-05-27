@@ -8,11 +8,14 @@ const productRoutes = require('./api/routes/products');
 const orderRoutes = require('./api/routes/orders');
 
 mongoose.connect('mongodb+srv://node-shop:'+ process.env.MONGOOSE_ATLAS_PASSWORD + '@node-rest-shop.murhvsl.mongodb.net/?retryWrites=true&w=majority');
+mongoose.Promise = global.Promise;
+
 
 
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
+app.use('/uploads', express.static('uploads'))
 
 app.use((req, res, next) => {
     res.header('Accept-Control-Allow-Origin', '*');
