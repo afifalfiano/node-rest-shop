@@ -83,7 +83,7 @@ router.delete('/:productId', (req, res, next) => {
     const id = req.params.productId;
     Product.findByIdAndRemove({_id: id}).exec().then(doc => {
         if (doc) {
-            res.status(200).json(doc)
+            res.status(200).json({message: `Success delete data with id ${id}`})
         } else {
             res.status(404).json({message: `The entry data is not provided. ${id}`})
         }
